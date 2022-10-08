@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate, useParams  } from 'react-router-dom';
 import EmployeeService from '../services/EmployeeService'
 
 const AddEmployeeComponent = () => {
@@ -9,8 +8,10 @@ const AddEmployeeComponent = () => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [emailId, setEmailId] = useState('')
-    // useNavigate() hook
+    
     const navigate = useNavigate();
+
+    const {id} = useParams();
 
     const saveEmployee = (e) => {
         e.preventDefault();
@@ -28,13 +29,36 @@ const AddEmployeeComponent = () => {
         })
     }
 
+    useEffect(() => {
+
+        EmployeeService.getEmployeeById(id).then((response) => {
+            setFirstName(response.data.firstName)
+            setLastName(response.data.lastName)
+            setEmailId(response.data.emailId)
+        }).catch(error => {
+            console.log(error)
+        })
+    }, [])
+
+    const title = () => {
+        if(id) {
+            return <h2 className = "text-center">Update Employee</h2>
+        } else {
+            return <h2 className = "text-center">Add Employee</h2>
+        }
+    }
+
     return (
         <div>
             <br></br>
             <div className = "container">
                 <div className = "row">
                     <div className = "card col-md-6 offset-md-3 offset-md-3">
-                        <h2 className = "text-center">Add Employee</h2>
+                        <div className = "card col-md-6 offset-md-3 offset-md-3">
+                            {
+                                title()
+                            }
+                        </div>
                         <div className = "card-body">
                             <form>
                                 <div className = "form-group mb-2">
